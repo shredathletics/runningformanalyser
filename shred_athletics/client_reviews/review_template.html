@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monthly Client Review</title>
+    <style>
+        :root {
+            --primary: #6366F1;
+            --secondary: #4F46E5;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --dark: #1f2937;
+            --light: #f3f4f6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            padding: 2rem;
+            color: white;
+        }
+
+        .header-content {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 2rem;
+        }
+
+        .client-info {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .info-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+        }
+
+        .content {
+            padding: 2rem;
+        }
+
+        .section {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: var(--light);
+            border-radius: 0.5rem;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .metric-card {
+            background: white;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .metric-title {
+            font-size: 0.875rem;
+            color: var(--dark);
+            opacity: 0.7;
+        }
+
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0.5rem 0;
+        }
+
+        .metric-change {
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .positive {
+            color: var(--success);
+        }
+
+        .negative {
+            color: var(--warning);
+        }
+
+        .goals-list {
+            list-style: none;
+        }
+
+        .goal-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: white;
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .goal-status {
+            width: 1.5rem;
+            height: 1.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.875rem;
+        }
+
+        .status-complete {
+            background: var(--success);
+            color: white;
+        }
+
+        .status-in-progress {
+            background: var(--warning);
+            color: white;
+        }
+
+        .notes {
+            background: white;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            min-height: 150px;
+        }
+
+        .action-items {
+            list-style: none;
+        }
+
+        .action-item {
+            padding: 1rem;
+            background: white;
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .action-priority {
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .priority-high {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .priority-medium {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .priority-low {
+            background: #d1fae5;
+            color: #059669;
+        }
+
+        .questionnaire {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .question-group {
+            margin-bottom: 2rem;
+        }
+
+        .question {
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: var(--light);
+            border-radius: 0.5rem;
+        }
+
+        .question-label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+        }
+
+        .response-area {
+            width: 100%;
+            min-height: 60px;
+            padding: 0.5rem;
+            background: white;
+            border-radius: 0.25rem;
+            margin-top: 0.5rem;
+        }
+
+        .rating-scale {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .rating-option {
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.25rem;
+            background: white;
+            cursor: pointer;
+            border: 1px solid #e5e7eb;
+        }
+
+        .rating-option.selected {
+            background: var(--primary);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-content">
+                <div>
+                    <h1>Monthly Client Review</h1>
+                    <div class="client-info">
+                        <div class="info-item">
+                            <strong>Client Name:</strong>
+                            <span contenteditable="true">Enter name</span>
+                        </div>
+                        <div class="info-item">
+                            <strong>Review Period:</strong>
+                            <span contenteditable="true">Month Year</span>
+                        </div>
+                        <div class="info-item">
+                            <strong>Coach:</strong>
+                            <span contenteditable="true">Coach name</span>
+                        </div>
+                        <div class="info-item">
+                            <strong>Program:</strong>
+                            <span contenteditable="true">Program type</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="content">
+            <section class="section">
+                <h2 class="section-title">Monthly Review Call Guide</h2>
+                
+                <div class="question-group">
+                    <h3 style="margin-bottom: 1rem; color: var(--primary);">Running Progress Review</h3>
+                    <div class="questionnaire">
+                        <div class="question">
+                            <div class="question-label">How do you feel about your running progress this month?</div>
+                            <div class="rating-scale">
+                                <div class="rating-option">1</div>
+                                <div class="rating-option">2</div>
+                                <div class="rating-option">3</div>
+                                <div class="rating-option">4</div>
+                                <div class="rating-option">5</div>
+                            </div>
+                            <div class="response-area" contenteditable="true">Notes on overall satisfaction and progress...</div>
+                        </div>
+                        <div class="question">
+                            <div class="question-label">What challenges or barriers have you faced in your training?</div>
+                            <div class="response-area" contenteditable="true">Discuss any injuries, time constraints, or other obstacles...</div>
+                        </div>
+                        <div class="question">
+                            <div class="question-label">How are you managing your recovery between sessions?</div>
+                            <div class="response-area" contenteditable="true">Sleep quality, rest days, recovery techniques...</div>
+                        </div>
+                        <div class="question">
+                            <div class="question-label">Which workouts felt most challenging/rewarding?</div>
+                            <div class="response-area" contenteditable="true">Specific sessions feedback...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question-group">
+                    <h3 style="margin-bottom: 1rem; color: var(--primary);">Strength Training Assessment</h3>
+                    <div class="questionnaire">
+                        <div class="question">
+                            <div class="question-label">Are you consistently completing your strength sessions?</div>
+                            <div class="rating-scale">
+                                <div class="rating-option">Never</div>
+                                <div class="rating-option">Rarely</div>
+                                <div class="rating-option">Sometimes</div>
+                                <div class="rating-option">Often</div>
+                                <div class="rating-option">Always</div>
+                            </div>
+                        </div>
+                        <div class="question">
+                            <div class="question-label">Which exercises need form adjustment or feel uncomfortable?</div>
+                            <div class="response-area" contenteditable="true">Note specific exercises for review...</div>
+                        </div>
+                        <div class="question">
+                            <div class="question-label">Equipment Access Update</div>
+                            <div class="response-area" contenteditable="true">Any changes to available equipment or gym access...</div>
+                        </div>
+                        <div class="question">
+                            <div class="question-label">Recovery Capacity from Strength Work</div>
+                            <div class="response-area" contenteditable="true">How well are you recovering between strength sessions...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question-group">
+                    <h3 style="margin-bottom: 1rem; color: var(--primary);">Nutrition Check-in</h3>
+                    <div class="questionnaire">
+                        <div class="question">
+                            <div class="question-label">How well are you following your meal plan?</div>
+                            <div class="rating-scale">
+                                <div class="rating-option">1</div>
+                                <div class="rating-option">2</div>
+                                <div class="rating-option">3</div>
+                                <div class="rating-option">4</div>
+                                <div class="rating-option">5</div>
+                            </div>
+                        </div>
+                        <div class="question">
+                            <div class="question-label">Any changes in food preferences or restrictions?</div>
+                            <div class="response-area" contenteditable="true">Note any dietary changes or new preferences...</div>
+                        </div>
+                        <div class="question">
+                            <div class="question-label">How is your fueling for workouts?</div>
+                            <div class="response-area" contenteditable="true">Pre/post workout nutrition, hydration strategy...</div>
+                        </div>
+                        <div class="question">
+                            <div class="question-label">Supplement Protocol Check</div>
+                            <div class="response-area" contenteditable="true">Review current supplements and any needs...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="question-group">
+                    <h3 style="margin-bottom: 1rem; color: var(--primary);">Goals and Planning</h3>
+                    <div class="questionnaire">
+                        <div class="question">
+                            <div class="question-label">Short-term Goals (Next Month)</div>
+                            <div class="response-area" contenteditable="true">Specific, measurable targets for next month...</div>
+                        </div>
+                        <div class="question">
+                            <div class="question-label">Long-term Goals Update</div>
+                            <div class="response-area" contenteditable="true">Review and adjust longer-term objectives...</div>
+                        </div>
+                        <div class="question">
+                            <div class="question-label">Upcoming Events or Races</div>
+                            <div class="response-area" contenteditable="true">Note any planned events and specific preparation needs...</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section">
+                <h2 class="section-title">Key Metrics</h2>
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-title">Weekly Distance</div>
+                        <div class="metric-value" contenteditable="true">40 km</div>
+                        <div class="metric-change positive" contenteditable="true">↑ 5 km</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-title">400m Rep Time</div>
+                        <div class="metric-value" contenteditable="true">85s</div>
+                        <div class="metric-change positive" contenteditable="true">↑ 3s faster</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-title">7k Tempo Time</div>
+                        <div class="metric-value" contenteditable="true">32:45</div>
+                        <div class="metric-change positive" contenteditable="true">↑ 45s faster</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-title">Fitness Score</div>
+                        <div class="metric-value" contenteditable="true">4,200</div>
+                        <div class="metric-change positive" contenteditable="true">↑ 300 points</div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section">
+                <h2 class="section-title">Monthly Goals Progress</h2>
+                <ul class="goals-list">
+                    <li class="goal-item">
+                        <div class="goal-status status-complete">✓</div>
+                        <div contenteditable="true">Increase weekly mileage to 40km</div>
+                    </li>
+                    <li class="goal-item">
+                        <div class="goal-status status-in-progress">→</div>
+                        <div contenteditable="true">Improve 400m rep consistency</div>
+                    </li>
+                    <li class="goal-item">
+                        <div class="goal-status status-in-progress">→</div>
+                        <div contenteditable="true">Complete strength training 3x/week</div>
+                    </li>
+                </ul>
+            </section>
+
+            <section class="section">
+                <h2 class="section-title">Coach's Notes</h2>
+                <div class="notes" contenteditable="true">
+                    Enter detailed observations about client's progress, challenges, and achievements...
+                </div>
+            </section>
+
+            <section class="section">
+                <h2 class="section-title">Action Items for Next Month</h2>
+                <ul class="action-items">
+                    <li class="action-item">
+                        <span class="action-priority priority-high">High</span>
+                        <span contenteditable="true">Focus on recovery between hard sessions</span>
+                    </li>
+                    <li class="action-item">
+                        <span class="action-priority priority-medium">Medium</span>
+                        <span contenteditable="true">Increase long run distance gradually</span>
+                    </li>
+                    <li class="action-item">
+                        <span class="action-priority priority-low">Low</span>
+                        <span contenteditable="true">Add variety to strength training routine</span>
+                    </li>
+                </ul>
+            </section>
+        </div>
+    </div>
+</body>
+</html> 

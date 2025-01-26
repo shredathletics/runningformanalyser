@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shred Athletics Running Analysis</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --accent-color: #3b82f6;
+            --background-color: #f8fafc;
+            --text-color: #1e293b;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        p {
+            font-size: 1.1rem;
+            color: var(--text-color);
+            opacity: 0.9;
+        }
+
+        .upload-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        #videoInput {
+            display: none;
+        }
+
+        .upload-button {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .upload-button:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .loading-section {
+            display: none;
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .results-section {
+            display: none;
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .score-display {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .recommendations {
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Shred Athletics Running Analysis</h1>
+            <p>Upload a video of your running form for personalised feedback and analysis</p>
+        </header>
+
+        <div class="upload-section">
+            <input type="file" id="videoInput" accept="video/mp4,video/mov,video/avi">
+            <button class="upload-button" onclick="document.getElementById('videoInput').click()">Choose Video</button>
+        </div>
+
+        <div class="loading-section" id="loadingSection">
+            <div class="spinner"></div>
+            <p>Analysing your running form...</p>
+        </div>
+
+        <div class="results-section" id="resultsSection">
+            <div class="score-display" id="scoreDisplay"></div>
+            <div class="recommendations" id="recommendationsText"></div>
+        </div>
+    </div>
+
+    <script>
+        const baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+            ? 'http://127.0.0.1:8000'
+            : 'https://shred-running-analysis.herokuapp.com';
+
+        const videoInput = document.getElementById('videoInput');
+        const uploadSection = document.getElementById('uploadSection');
+        const loadingSection = document.getElementById('loadingSection');
+        const resultsSection = document.getElementById('resultsSection');
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        const recommendationsText = document.getElementById('recommendationsText');
+        const progressBar = document.getElementById('progressBar');
+
+        async function checkServerHealth() {
+            try {
+                const response = await fetch(`${baseUrl}/health`);
+                return response.ok;
+            } catch (error) {
+                console.error('Server health check failed:', error);
+                return false;
+            }
+        }
+
+        async function uploadVideo(file) {
+            try {
+                const formData = new FormData();
+                formData.append('video', file);
+                
+                const response = await fetch(`${baseUrl}/analyse-running`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                displayResults(data);
+            } catch (error) {
+                console.error('Error uploading video:', error);
+                alert('Error uploading video: ' + error.message);
+            }
+        }
+
+        document.getElementById('videoInput').addEventListener('change', async function(e) {
+            if (!e.target.files.length) return;
+
+            const file = e.target.files[0];
+            await uploadVideo(file);
+        });
+
+        function displayResults(data) {
+            const resultsSection = document.getElementById('resultsSection');
+            const scoreDisplay = document.getElementById('scoreDisplay');
+            const recommendationsText = document.getElementById('recommendationsText');
+            
+            scoreDisplay.textContent = `${data.overall_score}/100`;
+            recommendationsText.innerHTML = data.recommendations.map(rec => `<p>${rec}</p>`).join('');
+            
+            resultsSection.style.display = 'block';
+        }
+    </script>
+</body>
+</html> 
