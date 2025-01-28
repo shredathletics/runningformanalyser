@@ -12,15 +12,15 @@ A web-based tool that analyzes running form using AI to provide detailed feedbac
 
 ## Live Demo
 
-Frontend: [Your GitHub Pages URL once deployed]
+Frontend: https://shredathletics.github.io/runningformanalyser
 Backend: https://running-form-analyzer.onrender.com
 
 ## Local Development
 
 1. Clone the repository:
 ```bash
-git clone [your-repo-url]
-cd running-form-analyzer
+git clone https://github.com/shredathletics/runningformanalyser.git
+cd runningformanalyser
 ```
 
 2. Open `index.html` in your browser to test the frontend.
@@ -55,4 +55,5 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details. 
+This project is licensed under the MIT License - see the LICENSE file for details.
+
