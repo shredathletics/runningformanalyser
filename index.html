@@ -1,205 +1,206 @@
 <!DOCTYPE html>
-<html lang="en-GB">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shred Athletics Running Analysis</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <title>Running Form Analyzer</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <style>
-        :root {
-            --primary-color: #2563eb;
-            --secondary-color: #1e40af;
-            --accent-color: #3b82f6;
-            --background-color: #f8fafc;
-            --text-color: #1e293b;
-        }
-
+        /* Custom gradient background */
         body {
-            font-family: 'Inter', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: var(--background-color);
-            color: var(--text-color);
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
-
-        header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
-        h1 {
-            font-size: 2.5rem;
-            color: var(--primary-color);
-            margin-bottom: 0.5rem;
-        }
-
-        p {
-            font-size: 1.1rem;
-            color: var(--text-color);
-            opacity: 0.9;
-        }
-
-        .upload-section {
-            background: white;
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            margin-bottom: 2rem;
-        }
-
-        #videoInput {
-            display: none;
-        }
-
-        .upload-button {
-            background-color: var(--primary-color);
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+            min-height: 100vh;
             color: white;
-            padding: 1rem 2rem;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: background-color 0.3s;
         }
-
-        .upload-button:hover {
-            background-color: var(--secondary-color);
+        .upload-box {
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
         }
-
-        .loading-section {
-            display: none;
-            text-align: center;
-            margin: 2rem 0;
+        .upload-box:hover {
+            border-color: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.05);
         }
-
-        .spinner {
+        .loading-spinner {
             width: 40px;
             height: 40px;
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid var(--primary-color);
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid white;
             border-radius: 50%;
             animation: spin 1s linear infinite;
-            margin: 0 auto 1rem;
+            margin: 1rem auto;
         }
-
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-
-        .results-section {
-            display: none;
-            background: white;
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .score-display {
-            font-size: 2rem;
-            font-weight: 600;
-            color: var(--primary-color);
-            text-align: center;
-            margin-bottom: 1rem;
-        }
-
-        .recommendations {
-            font-size: 1.1rem;
-            line-height: 1.6;
-        }
     </style>
 </head>
-<body>
-    <div class="container">
-        <header>
-            <h1>Shred Athletics Running Analysis</h1>
-            <p>Upload a video of your running form for personalised feedback and analysis</p>
-        </header>
+<body class="flex items-center justify-center">
+    <div class="text-center p-8 bg-white/10 backdrop-blur-md rounded-lg shadow-2xl max-w-2xl w-full mx-4">
+        <h1 class="text-4xl font-bold mb-4">Running Form Analyzer</h1>
+        <p class="text-lg mb-8">Upload a video of your running form (side, front, or back view) to get instant feedback on your posture, gait, and areas for improvement.</p>
 
-        <div class="upload-section">
-            <input type="file" id="videoInput" accept="video/mp4,video/mov,video/avi">
-            <button class="upload-button" onclick="document.getElementById('videoInput').click()">Choose Video</button>
+        <!-- Upload Form -->
+        <form id="uploadForm" class="mb-8">
+            <div class="upload-box p-6 rounded-lg cursor-pointer">
+                <input type="file" id="videoInput" accept="video/*" class="hidden" required>
+                <label for="videoInput" class="flex flex-col items-center justify-center space-y-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-blue-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                    </svg>
+                    <span class="text-blue-300 font-medium">Click to upload a video</span>
+                    <span class="text-sm text-gray-300">(MP4, AVI, or MOV files, max 100MB)</span>
+                </label>
+            </div>
+        </form>
+
+        <!-- Error Message -->
+        <div id="errorMessage" class="hidden bg-red-500/20 text-red-100 p-4 rounded-lg mb-4"></div>
+
+        <!-- Loading Section -->
+        <div id="loadingSection" class="hidden">
+            <div class="loading-spinner"></div>
+            <p class="text-lg">Analysing your running form...</p>
+            <p class="text-sm text-gray-300 mt-2">This may take up to 30 seconds</p>
         </div>
 
-        <div class="loading-section" id="loadingSection">
-            <div class="spinner"></div>
-            <p>Analysing your running form...</p>
-        </div>
+        <!-- Results Section -->
+        <div id="resultsSection" class="hidden">
+            <!-- Score Card -->
+            <div class="bg-gradient-to-r from-blue-600 to-blue-800 p-6 rounded-lg mb-6">
+                <h3 class="text-xl font-semibold mb-2">Your Running Form Score</h3>
+                <div id="scoreDisplay" class="text-5xl font-bold">0</div>
+            </div>
 
-        <div class="results-section" id="resultsSection">
-            <div class="score-display" id="scoreDisplay"></div>
-            <div class="recommendations" id="recommendationsText"></div>
+            <!-- Recommendations -->
+            <div class="bg-white/10 p-6 rounded-lg">
+                <h3 class="text-xl font-semibold mb-4">Detailed Analysis & Recommendations</h3>
+                <div id="recommendationsText" class="text-left"></div>
+            </div>
         </div>
     </div>
 
     <script>
-        const baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-            ? 'http://127.0.0.1:8000'
-            : 'https://shred-running-analysis.herokuapp.com';
-
+        const RENDER_BACKEND_URL = 'https://running-form-analyzer.onrender.com';
         const videoInput = document.getElementById('videoInput');
-        const uploadSection = document.getElementById('uploadSection');
+        const uploadForm = document.getElementById('uploadForm');
         const loadingSection = document.getElementById('loadingSection');
         const resultsSection = document.getElementById('resultsSection');
+        const errorMessage = document.getElementById('errorMessage');
         const scoreDisplay = document.getElementById('scoreDisplay');
         const recommendationsText = document.getElementById('recommendationsText');
-        const progressBar = document.getElementById('progressBar');
 
         async function checkServerHealth() {
             try {
-                const response = await fetch(`${baseUrl}/health`);
-                return response.ok;
+                const response = await fetch(`${RENDER_BACKEND_URL}/health`);
+                if (!response.ok) {
+                    throw new Error('Server health check failed');
+                }
+                console.log('Server is healthy');
+                return true;
             } catch (error) {
-                console.error('Server health check failed:', error);
+                console.error('Server health check error:', error);
+                showError('Server is currently unavailable. Please try again later.');
                 return false;
             }
         }
 
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.classList.remove('hidden');
+            loadingSection.classList.add('hidden');
+        }
+
+        function hideError() {
+            errorMessage.classList.add('hidden');
+        }
+
         async function uploadVideo(file) {
             try {
-                const formData = new FormData();
-                formData.append('video', file);
+                hideError();
                 
-                const response = await fetch(`${baseUrl}/analyse-running`, {
+                // Validate file type
+                const validTypes = ['video/mp4', 'video/quicktime', 'video/avi'];
+                if (!validTypes.includes(file.type)) {
+                    showError('Please upload an MP4, MOV, or AVI video file.');
+                    return;
+                }
+                
+                // Validate file size (100MB limit)
+                if (file.size > 100 * 1024 * 1024) {
+                    showError('Please upload a video smaller than 100MB.');
+                    return;
+                }
+                
+                // Show loading section
+                loadingSection.classList.remove('hidden');
+                resultsSection.classList.add('hidden');
+                
+                // Create form data
+                const formData = new FormData();
+                formData.append('file', file);
+                
+                // Send request
+                const response = await fetch(`${RENDER_BACKEND_URL}/analyse-running`, {
                     method: 'POST',
                     body: formData
                 });
                 
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Analysis failed');
                 }
                 
                 const data = await response.json();
                 displayResults(data);
+                
             } catch (error) {
-                console.error('Error uploading video:', error);
-                alert('Error uploading video: ' + error.message);
+                showError(error.message || 'An error occurred during analysis. Please try again.');
+            } finally {
+                loadingSection.classList.add('hidden');
             }
         }
 
-        document.getElementById('videoInput').addEventListener('change', async function(e) {
-            if (!e.target.files.length) return;
+        function displayResults(data) {
+            // Display overall score
+            scoreDisplay.textContent = `${data.overall_score}/100`;
+            
+            // Create detailed analysis section
+            let analysisHtml = `
+                <div class="space-y-4">
+                    <div>
+                        <h4 class="text-lg font-semibold mb-2">Analysis Points</h4>
+                        <ul class="list-disc list-inside space-y-2">
+                            ${data.feedback_points.map(point => `
+                                <li class="text-gray-100">${point}</li>
+                            `).join('')}
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h4 class="text-lg font-semibold mb-2">Priority Focus</h4>
+                        <p class="text-gray-100">${data.priority_focus}</p>
+                    </div>
+                </div>
+            `;
+            
+            recommendationsText.innerHTML = analysisHtml;
+            resultsSection.classList.remove('hidden');
+        }
 
-            const file = e.target.files[0];
-            await uploadVideo(file);
+        videoInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                uploadVideo(file);
+            }
         });
 
-        function displayResults(data) {
-            const resultsSection = document.getElementById('resultsSection');
-            const scoreDisplay = document.getElementById('scoreDisplay');
-            const recommendationsText = document.getElementById('recommendationsText');
-            
-            scoreDisplay.textContent = `${data.overall_score}/100`;
-            recommendationsText.innerHTML = data.recommendations.map(rec => `<p>${rec}</p>`).join('');
-            
-            resultsSection.style.display = 'block';
-        }
+        // Initialize
+        checkServerHealth().then(isHealthy => {
+            if (!isHealthy) {
+                showError('Server is not available. Please try again later.');
+            }
+        });
     </script>
 </body>
 </html> 
